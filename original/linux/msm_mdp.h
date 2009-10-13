@@ -1,6 +1,6 @@
 /* include/linux/msm_mdp.h
  *
- * Copyright (C) 2007 The Android Open Source Project
+ * Copyright (C) 2007 Google Incorporated
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -31,7 +31,8 @@ enum {
 	MDP_Y_CRCB_H2V1,  // Y and CrCb, pseduo planer w/ Cr is in MSB
 	MDP_Y_CBCR_H2V1,   // Y and CrCb, pseduo planer w/ Cr is in MSB
 	MDP_RGBA_8888,    // ARGB 888
-	MDP_BGRA_8888,    // BGRA 888
+	MDP_BGRA_8888,    // ARGB 888
+	MDP_RGBX_8888,    // RGBX 888
 	MDP_IMGTYPE_LIMIT // Non valid image type after this enum
 };
 
@@ -49,6 +50,7 @@ enum {
 #define MDP_ROT_270 (MDP_ROT_90|MDP_FLIP_UD|MDP_FLIP_LR)
 #define MDP_DITHER 0x8
 #define MDP_BLUR 0x10
+#define MDP_BLEND_FG_PREMULT 0x20000
 
 #define MDP_TRANSP_NOP 0xffffffff
 #define MDP_ALPHA_NOP 0xff
@@ -65,8 +67,7 @@ struct mdp_img {
 	uint32_t height;
 	uint32_t format;
 	uint32_t offset;
-	int memory_id;		/* for PMEM, the file descriptor,
-				 * for FB, ignored */
+	int memory_id;		/* the file descriptor */
 };
 
 struct mdp_blit_req {
