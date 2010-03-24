@@ -66,6 +66,10 @@ struct kgsl_devmemstore {
 	unsigned int sbz;
 	volatile unsigned int eoptimestamp;
 	unsigned int sbz2;
+	volatile unsigned int ts_cmp_enable;
+	unsigned int sbz3;
+	volatile unsigned int ref_wait_ts;
+	unsigned int sbz4;
 };
 
 #define KGSL_DEVICE_MEMSTORE_OFFSET(field) \
@@ -86,7 +90,8 @@ enum kgsl_property_type {
 	KGSL_PROP_DEVICE_POWER    = 0x00000003,
 	KGSL_PROP_SHMEM           = 0x00000004,
 	KGSL_PROP_SHMEM_APERTURES = 0x00000005,
-	KGSL_PROP_MMU_ENABLE 	  = 0x00000006
+	KGSL_PROP_MMU_ENABLE 	  = 0x00000006,
+	KGSL_PROP_INTERRUPT_WAITS = 0x00000007,
 };
 
 struct kgsl_shadowprop {
@@ -207,10 +212,12 @@ struct kgsl_drawctxt_destroy {
 #define IOCTL_KGSL_DRAWCTXT_DESTROY \
 	_IOW(KGSL_IOC_TYPE, 0x14, struct kgsl_drawctxt_destroy)
 
-/* add a block of pmem into the GPU address space */
+/* add a block of pmem or fb into the GPU address space */
 struct kgsl_sharedmem_from_pmem {
 	int pmem_fd;
 	unsigned int gpuaddr;	/*output param */
+	unsigned int len;
+	unsigned int offset;
 };
 
 #define IOCTL_KGSL_SHAREDMEM_FROM_PMEM \
@@ -267,5 +274,13 @@ struct kgsl_sharedmem_from_vmalloc {
 
 #define IOCTL_KGSL_SHAREDMEM_FLUSH_CACHE \
 	_IOW(KGSL_IOC_TYPE, 0x24, struct kgsl_sharedmem_free)
+
+struct kgsl_drawctxt_set_bin_base_offset {
+	unsigned int drawctxt_id;
+	unsigned int offset;
+};
+
+#define IOCTL_KGSL_DRAWCTXT_SET_BIN_BASE_OFFSET \
+	_IOW(KGSL_IOC_TYPE, 0x25, struct kgsl_drawctxt_set_bin_base_offset)
 
 #endif /* _MSM_KGSL_H */
