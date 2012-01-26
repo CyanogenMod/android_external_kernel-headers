@@ -54,7 +54,7 @@
 
 #endif /* _MIPS_SIM == _MIPS_SIM_ABI32 */
 
-#if _MIPS_SIM == _MIPS_SIM_ABI64 || _MIPS_SIM == _MIPS_SIM_NABI32
+#if ((_MIPS_SIM == _MIPS_SIM_ABI64) || (_MIPS_SIM == _MIPS_SIM_NABI32))
 
 #define zero	$0	/* wired zero */
 #define AT	$at	/* assembler temp - uppercase because of ".set at" */

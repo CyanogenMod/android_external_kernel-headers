@@ -9,15 +9,32 @@
 #ifndef _ASM_TYPES_H
 #define _ASM_TYPES_H
 
-#if _MIPS_SZLONG == 64
-# include <asm-generic/int-l64.h>
-#else
-# include <asm-generic/int-ll64.h>
-#endif
-
 #ifndef __ASSEMBLY__
 
 typedef unsigned short umode_t;
+
+typedef __signed__ char __s8;
+typedef unsigned char __u8;
+
+typedef __signed__ short __s16;
+typedef unsigned short __u16;
+
+typedef __signed__ int __s32;
+typedef unsigned int __u32;
+
+#if _MIPS_SZLONG == 64
+
+typedef __signed__ long __s64;
+typedef unsigned long __u64;
+
+#else
+
+#ifdef __GNUC__
+typedef __signed__ long long __s64;
+typedef unsigned long long __u64;
+#endif
+
+#endif
 
 #endif /* __ASSEMBLY__ */
 
@@ -49,6 +66,9 @@ typedef unsigned long phys_t;
 
 #endif /* __ASSEMBLY__ */
 
+
 #endif /* __KERNEL__ */
+
+
 
 #endif /* _ASM_TYPES_H */
