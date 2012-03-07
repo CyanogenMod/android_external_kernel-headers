@@ -786,6 +786,7 @@ struct v4l2_ext_control {
 		__s32 value;
 		__s64 value64;
 		char *string;
+		void *reserved;
 	};
 } __attribute__ ((packed));
 
