@@ -347,6 +347,7 @@
 #define __NR_mbind			(__NR_SYSCALL_BASE+319)
 #define __NR_get_mempolicy		(__NR_SYSCALL_BASE+320)
 #define __NR_set_mempolicy		(__NR_SYSCALL_BASE+321)
+#define __NR_perf_event_open		(__NR_SYSCALL_BASE+364)
 
 /*
  * The following SWIs are ARM private.
