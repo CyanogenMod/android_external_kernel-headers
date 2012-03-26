@@ -11,6 +11,7 @@
 #include <asm/page.h>
 #include <asm/reg.h>
 
+#define EF_SIZE 180
 /*
  * Core file format: The core file is written in such a way that gdb
  * can understand it and provide useful information to the user (under

@@ -12,6 +12,7 @@
 #include <linux/types.h>
 
 #define _NSIG		128
+#define NSIG 		128
 #define _NSIG_BPW	(sizeof(unsigned long) * 8)
 #define _NSIG_WORDS	(_NSIG / _NSIG_BPW)
 
@@ -112,20 +113,24 @@ typedef unsigned long old_sigset_t;		/* at least 32 bits */
 #include <asm-generic/signal.h>
 
 struct sigaction {
-	unsigned int	sa_flags;
-	__sighandler_t	sa_handler;
-	sigset_t	sa_mask;
+ unsigned int sa_flags;
+ union {
+	 __sighandler_t sa_handler;				/* !SA_SIGINFO */
+	 void (*sa_sigaction) (int, struct siginfo *, void *);	/* SA_SIGINFO */
+ } __sigaction_handler;
+#define sa_handler    __sigaction_handler.sa_handler
+#define sa_sigaction  __sigaction_handler.sa_sigaction
+ sigset_t sa_mask;
 };
 
 struct k_sigaction {
-	struct sigaction sa;
+ struct sigaction sa;
 };
 
-/* IRIX compatible stack_t  */
 typedef struct sigaltstack {
-	void __user *ss_sp;
-	size_t ss_size;
-	int ss_flags;
+ void  *ss_sp;
+ size_t ss_size;
+ int ss_flags;
 } stack_t;
 
 #ifdef __KERNEL__
