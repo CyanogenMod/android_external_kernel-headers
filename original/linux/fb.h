@@ -229,6 +229,8 @@ struct fb_bitfield {
 #define FB_FLAG_RATIO_4_3	64
 #define FB_FLAG_RATIO_16_9	128
 #define FB_FLAG_PIXEL_REPEAT	256
+#define FB_FLAG_PREFERRED	512
+#define FB_FLAG_HW_CAPABLE	1024
 
 /*
  * Display rotation support
@@ -443,6 +445,8 @@ struct file;
 
 #define FB_MISC_PRIM_COLOR	1
 #define FB_MISC_1ST_DETAIL	2	/* First Detailed Timing is preferred */
+#define FB_MISC_HDMI		4	/* display supports HDMI signaling */
+
 struct fb_chroma {
 	__u32 redx;	/* in fraction of 1024 */
 	__u32 greenx;
