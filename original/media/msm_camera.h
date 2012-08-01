@@ -195,6 +195,33 @@
 #define MSM_CAM_IOCTL_ISPIF_IO_CFG \
 	_IOR(MSM_CAM_IOCTL_MAGIC, 54, struct ispif_cfg_data *)
 
+#define MSM_CAM_IOCTL_STATS_REQBUF \
+	_IOR(MSM_CAM_IOCTL_MAGIC, 55, struct msm_stats_reqbuf *)
+
+#define MSM_CAM_IOCTL_STATS_ENQUEUEBUF \
+	_IOR(MSM_CAM_IOCTL_MAGIC, 56, struct msm_stats_buf_info *)
+
+#define MSM_CAM_IOCTL_STATS_FLUSH_BUFQ \
+	_IOR(MSM_CAM_IOCTL_MAGIC, 57, struct msm_stats_flush_bufq *)
+
+#define MSM_CAM_IOCTL_SET_MCTL_SDEV \
+	_IOW(MSM_CAM_IOCTL_MAGIC, 58, struct msm_mctl_set_sdev_data *)
+
+#define MSM_CAM_IOCTL_UNSET_MCTL_SDEV \
+	_IOW(MSM_CAM_IOCTL_MAGIC, 59, struct msm_mctl_set_sdev_data *)
+
+#define MSM_CAM_IOCTL_GET_INST_HANDLE \
+	_IOR(MSM_CAM_IOCTL_MAGIC, 60, uint32_t *)
+
+struct msm_stats_reqbuf {
+	int num_buf;		/* how many buffers requested */
+	int stats_type;	/* stats type */
+};
+
+struct msm_stats_flush_bufq {
+	int stats_type;	/* enum msm_stats_enum_type */
+};
+
 struct msm_mctl_pp_cmd {
 	int32_t  id;
 	uint16_t length;
@@ -316,6 +343,7 @@ struct msm_pp_frame {
 		struct msm_pp_frame_mp mp[MAX_PLANES];
 	};
 	int node_type;
+	uint32_t inst_handle;
 };
 
 struct msm_cam_evt_divert_frame {
@@ -515,6 +543,36 @@ struct camera_enable_cmd {
 #define FRAME_RAW_SNAPSHOT		4
 #define FRAME_MAX			5
 
+enum msm_stats_enum_type {
+	MSM_STATS_TYPE_AEC, /* legacy based AEC */
+	MSM_STATS_TYPE_AF,  /* legacy based AF */
+	MSM_STATS_TYPE_AWB, /* legacy based AWB */
+	MSM_STATS_TYPE_RS,  /* legacy based RS */
+	MSM_STATS_TYPE_CS,  /* legacy based CS */
+	MSM_STATS_TYPE_IHIST,   /* legacy based HIST */
+	MSM_STATS_TYPE_SKIN,    /* legacy based SKIN */
+	MSM_STATS_TYPE_BG,  /* Bayer Grids */
+	MSM_STATS_TYPE_BF,  /* Bayer Focus */
+	MSM_STATS_TYPE_BHIST,   /* Bayer Hist */
+	MSM_STATS_TYPE_AE_AW,   /* legacy stats for vfe 2.x*/
+	MSM_STATS_TYPE_MAX  /* MAX */
+};
+
+struct msm_stats_buf_info {
+	int type; /* msm_stats_enum_type */
+	int fd;
+	void *vaddr;
+	uint32_t offset;
+	uint32_t len;
+	uint32_t y_off;
+	uint32_t cbcr_off;
+	uint32_t planar0_off;
+	uint32_t planar1_off;
+	uint32_t planar2_off;
+	uint8_t active;
+	int buf_idx;
+};
+
 struct msm_pmem_info {
 	int type;
 	int fd;
@@ -678,6 +736,7 @@ struct msm_stats_buf {
 	int length;
 	struct ion_handle *handle;
 	uint32_t frame_id;
+	int buf_idx;
 };
 #define MSM_V4L2_EXT_CAPTURE_MODE_DEFAULT 0
 /* video capture mode in VIDIOC_S_PARM */
@@ -718,7 +777,7 @@ struct msm_stats_buf {
 #define MSM_V4L2_PID_CTRL_CMD               (V4L2_CID_PRIVATE_BASE+13)
 #define MSM_V4L2_PID_EVT_SUB_INFO           (V4L2_CID_PRIVATE_BASE+14)
 #define MSM_V4L2_PID_STROBE_FLASH           (V4L2_CID_PRIVATE_BASE+15)
-#define MSM_V4L2_PID_MMAP_ENTRY             (V4L2_CID_PRIVATE_BASE+16)
+#define MSM_V4L2_PID_INST_HANDLE            (V4L2_CID_PRIVATE_BASE+16)
 #define MSM_V4L2_PID_MMAP_INST              (V4L2_CID_PRIVATE_BASE+17)
 #define MSM_V4L2_PID_PP_PLANE_INFO          (V4L2_CID_PRIVATE_BASE+18)
 #define MSM_V4L2_PID_MAX                    MSM_V4L2_PID_PP_PLANE_INFO
@@ -1094,17 +1153,6 @@ struct sensor_init_cfg {
 	uint8_t pict_res;
 };
 
-#define ROLLOFF_CALDATA_SIZE    (17 * 13)
-typedef struct
-{
-    unsigned short          mesh_rolloff_table_size;     // TableSize
-    uint8_t                 r_gain[ROLLOFF_CALDATA_SIZE];   // RGain
-    uint8_t                 gr_gain[ROLLOFF_CALDATA_SIZE];  // GRGain
-    uint8_t                 gb_gain[ROLLOFF_CALDATA_SIZE];  // GBGain
-    uint8_t                 b_gain[ROLLOFF_CALDATA_SIZE];   // BGain
-    uint8_t                 red_ref[17];
-} rolloff_caldata_array_type;
-
 struct sensor_calib_data {
 	/* Color Related Measurements */
 	uint16_t r_over_g;
@@ -1117,8 +1165,6 @@ struct sensor_calib_data {
 	uint16_t stroke_amt;
 	uint16_t af_pos_1m;
 	uint16_t af_pos_inf;
-	/* Lens Shading Calibration Data */
-	rolloff_caldata_array_type rolloff;
 };
 
 enum msm_sensor_resolution_t {
@@ -1587,12 +1633,34 @@ struct img_plane_info {
 	uint8_t num_planes;
 	struct plane_data plane[MAX_PLANES];
 	uint32_t sp_y_offset;
-	uint8_t vpe_can_use;
+	uint32_t inst_handle;
 };
 
 #define QCAMERA_NAME "qcamera"
+#define QCAMERA_SERVER_NAME "qcamera_server"
 #define QCAMERA_DEVICE_GROUP_ID 1
 #define QCAMERA_VNODE_GROUP_ID 2
+
+enum msm_cam_subdev_type {
+	CSIPHY_DEV,
+	CSID_DEV,
+	CSIC_DEV,
+	ISPIF_DEV,
+	VFE_DEV,
+	AXI_DEV,
+	VPE_DEV,
+	SENSOR_DEV,
+	ACTUATOR_DEV,
+	EEPROM_DEV,
+	GESTURE_DEV,
+	IRQ_ROUTER_DEV,
+	CPP_DEV,
+};
+
+struct msm_mctl_set_sdev_data {
+	uint32_t revision;
+	enum msm_cam_subdev_type sdev_type;
+};
 
 #define MSM_CAM_V4L2_IOCTL_GET_CAMERA_INFO \
 	_IOWR('V', BASE_VIDIOC_PRIVATE + 1, struct msm_camera_v4l2_ioctl_t)
@@ -1617,6 +1685,39 @@ struct img_plane_info {
 
 #define MSM_CAM_V4L2_IOCTL_PRIVATE_S_CTRL \
 	_IOWR('V', BASE_VIDIOC_PRIVATE + 8, struct msm_camera_v4l2_ioctl_t)
+
+#define MSM_CAM_V4L2_IOCTL_PRIVATE_G_CTRL \
+	_IOWR('V', BASE_VIDIOC_PRIVATE + 9, struct msm_camera_v4l2_ioctl_t)
+
+#define VIDIOC_MSM_VPE_INIT \
+	_IO('V', BASE_VIDIOC_PRIVATE + 15)
+
+#define VIDIOC_MSM_VPE_RELEASE \
+	_IO('V', BASE_VIDIOC_PRIVATE + 16)
+
+#define VIDIOC_MSM_VPE_CFG \
+	_IOWR('V', BASE_VIDIOC_PRIVATE + 17, struct msm_mctl_pp_params *)
+
+#define VIDIOC_MSM_AXI_INIT \
+	_IO('V', BASE_VIDIOC_PRIVATE + 18)
+
+#define VIDIOC_MSM_AXI_RELEASE \
+	_IO('V', BASE_VIDIOC_PRIVATE + 19)
+
+#define VIDIOC_MSM_AXI_CFG \
+	_IOWR('V', BASE_VIDIOC_PRIVATE + 20, void *)
+
+#define VIDIOC_MSM_AXI_IRQ \
+	_IOWR('V', BASE_VIDIOC_PRIVATE + 21, void *)
+
+#define VIDIOC_MSM_AXI_BUF_CFG \
+	_IOWR('V', BASE_VIDIOC_PRIVATE + 22, void *)
+
+#define VIDIOC_MSM_VFE_INIT \
+	_IO('V', BASE_VIDIOC_PRIVATE + 22)
+
+#define VIDIOC_MSM_VFE_RELEASE \
+	_IO('V', BASE_VIDIOC_PRIVATE + 23)
 
 struct msm_camera_v4l2_ioctl_t {
 	uint32_t id;
@@ -1767,5 +1868,39 @@ struct msm_cpp_frame_info_t {
 	_IOWR('V', BASE_VIDIOC_PRIVATE + 2, struct msm_camera_v4l2_ioctl_t)
 
 #define V4L2_EVENT_CPP_FRAME_DONE  (V4L2_EVENT_PRIVATE_START + 0)
+
+/* Instance Handle - inst_handle
+ * Data bundle containing the information about where
+ * to get a buffer for a particular camera instance.
+ * This is a bitmask containing the following data:
+ * Buffer Handle Bitmask:
+ *      ------------------------------------
+ *      Bits    :  Purpose
+ *      ------------------------------------
+ *      31 - 24 :  Reserved.
+ *      23      :  is Image mode valid?
+ *      22 - 16 :  Image mode.
+ *      15      :  is MCTL PP inst idx valid?
+ *      14 - 8  :  MCTL PP inst idx.
+ *      7       :  is Video inst idx valid?
+ *      6 - 0   :  Video inst idx.
+ */
+#define CLR_IMG_MODE(handle)	(handle &= 0xFF00FFFF)
+#define SET_IMG_MODE(handle, data)	\
+	(handle |= ((0x1 << 23) | ((data & 0x7F) << 16)))
+#define GET_IMG_MODE(handle)	\
+	((handle & 0x800000) ? ((handle & 0x7F0000) >> 16) : 0xFF)
+
+#define CLR_MCTLPP_INST_IDX(handle)	(handle &= 0xFFFF00FF)
+#define SET_MCTLPP_INST_IDX(handle, data)	\
+	(handle |= ((0x1 << 15) | ((data & 0x7F) << 8)))
+#define GET_MCTLPP_INST_IDX(handle)	\
+	((handle & 0x8000) ? ((handle & 0x7F00) >> 8) : 0xFF)
+
+#define CLR_VIDEO_INST_IDX(handle)	(handle &= 0xFFFFFF00)
+#define GET_VIDEO_INST_IDX(handle)	\
+	((handle & 0x80) ? (handle & 0x7F) : 0xFF)
+#define SET_VIDEO_INST_IDX(handle, data)	\
+	(handle |= (0x1 << 7) | (data & 0x7F))
 
 #endif /* __LINUX_MSM_CAMERA_H */
