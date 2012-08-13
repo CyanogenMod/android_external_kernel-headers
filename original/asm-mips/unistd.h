@@ -350,16 +350,33 @@
 #define __NR_dup3			(__NR_Linux + 327)
 #define __NR_pipe2			(__NR_Linux + 328)
 #define __NR_inotify_init1		(__NR_Linux + 329)
+#define __NR_preadv			(__NR_Linux + 330)
+#define __NR_pwritev			(__NR_Linux + 331)
+#define __NR_rt_tgsigqueueinfo		(__NR_Linux + 332)
+#define __NR_perf_event_open		(__NR_Linux + 333)
+#define __NR_accept4			(__NR_Linux + 334)
+#define __NR_recvmmsg			(__NR_Linux + 335)
+#define __NR_fanotify_init		(__NR_Linux + 336)
+#define __NR_fanotify_mark		(__NR_Linux + 337)
+#define __NR_prlimit64			(__NR_Linux + 338)
+#define __NR_name_to_handle_at		(__NR_Linux + 339)
+#define __NR_open_by_handle_at		(__NR_Linux + 340)
+#define __NR_clock_adjtime		(__NR_Linux + 341)
+#define __NR_syncfs			(__NR_Linux + 342)
+#define __NR_sendmmsg			(__NR_Linux + 343)
+#define __NR_setns			(__NR_Linux + 344)
+#define __NR_process_vm_readv		(__NR_Linux + 345)
+#define __NR_process_vm_writev		(__NR_Linux + 346)
 
 /*
  * Offset of the last Linux o32 flavoured syscall
  */
-#define __NR_Linux_syscalls		329
+#define __NR_Linux_syscalls		346
 
 #endif /* _MIPS_SIM == _MIPS_SIM_ABI32 */
 
 #define __NR_O32_Linux			4000
-#define __NR_O32_Linux_syscalls		329
+#define __NR_O32_Linux_syscalls		346
 
 #if _MIPS_SIM == _MIPS_SIM_ABI64
 
@@ -656,16 +673,33 @@
 #define __NR_dup3			(__NR_Linux + 286)
 #define __NR_pipe2			(__NR_Linux + 287)
 #define __NR_inotify_init1		(__NR_Linux + 288)
+#define __NR_preadv			(__NR_Linux + 289)
+#define __NR_pwritev			(__NR_Linux + 290)
+#define __NR_rt_tgsigqueueinfo		(__NR_Linux + 291)
+#define __NR_perf_event_open		(__NR_Linux + 292)
+#define __NR_accept4			(__NR_Linux + 293)
+#define __NR_recvmmsg			(__NR_Linux + 294)
+#define __NR_fanotify_init		(__NR_Linux + 295)
+#define __NR_fanotify_mark		(__NR_Linux + 296)
+#define __NR_prlimit64			(__NR_Linux + 297)
+#define __NR_name_to_handle_at		(__NR_Linux + 298)
+#define __NR_open_by_handle_at		(__NR_Linux + 299)
+#define __NR_clock_adjtime		(__NR_Linux + 300)
+#define __NR_syncfs			(__NR_Linux + 301)
+#define __NR_sendmmsg			(__NR_Linux + 302)
+#define __NR_setns			(__NR_Linux + 303)
+#define __NR_process_vm_readv		(__NR_Linux + 304)
+#define __NR_process_vm_writev		(__NR_Linux + 305)
 
 /*
  * Offset of the last Linux 64-bit flavoured syscall
  */
-#define __NR_Linux_syscalls		288
+#define __NR_Linux_syscalls		305
 
 #endif /* _MIPS_SIM == _MIPS_SIM_ABI64 */
 
 #define __NR_64_Linux			5000
-#define __NR_64_Linux_syscalls		288
+#define __NR_64_Linux_syscalls		305
 
 #if _MIPS_SIM == _MIPS_SIM_NABI32
 
@@ -966,16 +1000,34 @@
 #define __NR_dup3			(__NR_Linux + 290)
 #define __NR_pipe2			(__NR_Linux + 291)
 #define __NR_inotify_init1		(__NR_Linux + 292)
+#define __NR_preadv			(__NR_Linux + 293)
+#define __NR_pwritev			(__NR_Linux + 294)
+#define __NR_rt_tgsigqueueinfo		(__NR_Linux + 295)
+#define __NR_perf_event_open		(__NR_Linux + 296)
+#define __NR_accept4			(__NR_Linux + 297)
+#define __NR_recvmmsg			(__NR_Linux + 298)
+#define __NR_getdents64			(__NR_Linux + 299)
+#define __NR_fanotify_init		(__NR_Linux + 300)
+#define __NR_fanotify_mark		(__NR_Linux + 301)
+#define __NR_prlimit64			(__NR_Linux + 302)
+#define __NR_name_to_handle_at		(__NR_Linux + 303)
+#define __NR_open_by_handle_at		(__NR_Linux + 304)
+#define __NR_clock_adjtime		(__NR_Linux + 305)
+#define __NR_syncfs			(__NR_Linux + 306)
+#define __NR_sendmmsg			(__NR_Linux + 307)
+#define __NR_setns			(__NR_Linux + 308)
+#define __NR_process_vm_readv		(__NR_Linux + 309)
+#define __NR_process_vm_writev		(__NR_Linux + 310)
 
 /*
  * Offset of the last N32 flavoured syscall
  */
-#define __NR_Linux_syscalls		292
+#define __NR_Linux_syscalls		310
 
 #endif /* _MIPS_SIM == _MIPS_SIM_NABI32 */
 
 #define __NR_N32_Linux			6000
-#define __NR_N32_Linux_syscalls		292
+#define __NR_N32_Linux_syscalls		310
 
 #ifdef __KERNEL__
 
@@ -986,6 +1038,7 @@
 #define __ARCH_WANT_OLD_READDIR
 #define __ARCH_WANT_SYS_ALARM
 #define __ARCH_WANT_SYS_GETHOSTNAME
+#define __ARCH_WANT_SYS_IPC
 #define __ARCH_WANT_SYS_PAUSE
 #define __ARCH_WANT_SYS_SGETMASK
 #define __ARCH_WANT_SYS_UTIME
@@ -995,6 +1048,7 @@
 #define __ARCH_WANT_SYS_LLSEEK
 #define __ARCH_WANT_SYS_NICE
 #define __ARCH_WANT_SYS_OLD_GETRLIMIT
+#define __ARCH_WANT_SYS_OLD_UNAME
 #define __ARCH_WANT_SYS_OLDUMOUNT
 #define __ARCH_WANT_SYS_SIGPENDING
 #define __ARCH_WANT_SYS_SIGPROCMASK
