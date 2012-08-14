@@ -62,6 +62,10 @@
 #define MSG_ID_OUTPUT_TERTIARY1         43
 #define MSG_ID_STOP_LS_ACK              44
 #define MSG_ID_OUTPUT_TERTIARY2         45
+#define MSG_ID_STATS_BG                 46
+#define MSG_ID_STATS_BF                 47
+#define MSG_ID_STATS_BHIST              48
+
 
 /* ISP command IDs */
 #define VFE_CMD_DUMMY_0                                 0
@@ -203,6 +207,17 @@
 #define VFE_CMD_CAPTURE_RAW                             136
 #define VFE_CMD_STOP_LIVESHOT                           137
 #define VFE_CMD_RECONFIG_VFE                            138
+#define VFE_CMD_STATS_REQBUF                            139
+#define VFE_CMD_STATS_ENQUEUEBUF                        140
+#define VFE_CMD_STATS_FLUSH_BUFQ                        141
+#define VFE_CMD_STATS_UNREGBUF                          142
+#define VFE_CMD_STATS_BG_START                          143
+#define VFE_CMD_STATS_BG_STOP                           144
+#define VFE_CMD_STATS_BF_START                          145
+#define VFE_CMD_STATS_BF_STOP                           146
+#define VFE_CMD_STATS_BHIST_START                       147
+#define VFE_CMD_STATS_BHIST_STOP                        148
+#define VFE_CMD_RESET_2                                 149
 
 struct msm_isp_cmd {
 	int32_t  id;
@@ -333,7 +348,7 @@ struct msm_mctl_pp_frame_cmd {
 #define VFE_OUTPUTS_RDI1                BIT(12)
 
 struct msm_frame_info {
-	uint32_t image_mode;
+	uint32_t inst_handle;
 	uint32_t path;
 };
 
