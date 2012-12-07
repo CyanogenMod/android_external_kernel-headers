@@ -3,4 +3,4 @@ This directory contains the original kernel headers that are used to generate Bi
 They are mostly covered by the GPLv2 + exception, and thus cannot be distributed as part of the platform itself.
 (NOTE: The cleaned up headers do not contain copyrightable information and are distributed with Bionic)
 
-For more details, please read system/bionic/kernel/README.TXT
+For more details, please read bionic/libc/kernel/README.TXT
