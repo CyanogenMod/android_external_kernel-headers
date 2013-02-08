@@ -29,24 +29,33 @@
 #define XATTR_USER_PREFIX "user."
 #define XATTR_USER_PREFIX_LEN (sizeof (XATTR_USER_PREFIX) - 1)
 
+/* Security namespace */
+#define XATTR_EVM_SUFFIX "evm"
+#define XATTR_NAME_EVM XATTR_SECURITY_PREFIX XATTR_EVM_SUFFIX
 
-struct xattr_handler {
-	char *prefix;
-	size_t (*list)(struct inode *inode, char *list, size_t list_size,
-		       const char *name, size_t name_len);
-	int (*get)(struct inode *inode, const char *name, void *buffer,
-		   size_t size);
-	int (*set)(struct inode *inode, const char *name, const void *buffer,
-		   size_t size, int flags);
-};
+#define XATTR_SELINUX_SUFFIX "selinux"
+#define XATTR_NAME_SELINUX XATTR_SECURITY_PREFIX XATTR_SELINUX_SUFFIX
 
-ssize_t vfs_getxattr(struct dentry *, char *, void *, size_t);
-int vfs_setxattr(struct dentry *, char *, void *, size_t, int);
-int vfs_removexattr(struct dentry *, char *);
+#define XATTR_SMACK_SUFFIX "SMACK64"
+#define XATTR_SMACK_IPIN "SMACK64IPIN"
+#define XATTR_SMACK_IPOUT "SMACK64IPOUT"
+#define XATTR_SMACK_EXEC "SMACK64EXEC"
+#define XATTR_SMACK_TRANSMUTE "SMACK64TRANSMUTE"
+#define XATTR_SMACK_MMAP "SMACK64MMAP"
+#define XATTR_NAME_SMACK XATTR_SECURITY_PREFIX XATTR_SMACK_SUFFIX
+#define XATTR_NAME_SMACKIPIN	XATTR_SECURITY_PREFIX XATTR_SMACK_IPIN
+#define XATTR_NAME_SMACKIPOUT	XATTR_SECURITY_PREFIX XATTR_SMACK_IPOUT
+#define XATTR_NAME_SMACKEXEC	XATTR_SECURITY_PREFIX XATTR_SMACK_EXEC
+#define XATTR_NAME_SMACKTRANSMUTE XATTR_SECURITY_PREFIX XATTR_SMACK_TRANSMUTE
+#define XATTR_NAME_SMACKMMAP XATTR_SECURITY_PREFIX XATTR_SMACK_MMAP
 
-ssize_t generic_getxattr(struct dentry *dentry, const char *name, void *buffer, size_t size);
-ssize_t generic_listxattr(struct dentry *dentry, char *buffer, size_t buffer_size);
-int generic_setxattr(struct dentry *dentry, const char *name, const void *value, size_t size, int flags);
-int generic_removexattr(struct dentry *dentry, const char *name);
+#define XATTR_CAPS_SUFFIX "capability"
+#define XATTR_NAME_CAPS XATTR_SECURITY_PREFIX XATTR_CAPS_SUFFIX
+
+#define XATTR_POSIX_ACL_ACCESS  "posix_acl_access"
+#define XATTR_NAME_POSIX_ACL_ACCESS XATTR_SYSTEM_PREFIX XATTR_POSIX_ACL_ACCESS
+#define XATTR_POSIX_ACL_DEFAULT  "posix_acl_default"
+#define XATTR_NAME_POSIX_ACL_DEFAULT XATTR_SYSTEM_PREFIX XATTR_POSIX_ACL_DEFAULT
+
 
 #endif	/* _LINUX_XATTR_H */
