@@ -76,11 +76,7 @@ struct icmphdr {
 	} echo;
 	__u32	gateway;
 	struct {
-#if 0	/* BIONIC: __unused is defined as "" */
 		__u16	__unused;
-#else
-        __u16   __unused_field;
-#endif
 		__u16	mtu;
 	} frag;
   } un;
