@@ -2,6 +2,7 @@
  *
  * Copyright (C) Shailabh Nagar, IBM Corp. 2006
  *           (C) Balbir Singh,   IBM Corp. 2006
+ *           (C) Jay Lan,        SGI, 2006
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2.1 of the GNU Lesser General Public License
@@ -14,6 +15,8 @@
 
 #ifndef _LINUX_TASKSTATS_H
 #define _LINUX_TASKSTATS_H
+
+#include <linux/types.h>
 
 /* Format for per-task data returned to userland when
  *	- a task exits
@@ -29,16 +32,25 @@
  *	c) add new fields after version comment; maintain 64-bit alignment
  */
 
-#define TASKSTATS_VERSION	1
+
+#define TASKSTATS_VERSION	8
+#define TS_COMM_LEN		32	/* should be >= TASK_COMM_LEN
+					 * in linux/sched.h */
 
 struct taskstats {
 
-	/* Version 1 */
+	/* The version number of this struct. This field is always set to
+	 * TAKSTATS_VERSION, which is defined in <linux/taskstats.h>.
+	 * Each time the struct is changed, the value should be incremented.
+	 */
 	__u16	version;
-	__u16	padding[3];	/* Userspace should not interpret the padding
-				 * field which can be replaced by useful
-				 * fields if struct taskstats is extended.
-				 */
+	__u32	ac_exitcode;		/* Exit status */
+
+	/* The accounting flags of a task as defined in <linux/acct.h>
+	 * Defined values are AFORK, ASU, ACOMPAT, ACORE, and AXSIG.
+	 */
+	__u8	ac_flag;		/* Record flags */
+	__u8	ac_nice;		/* task_nice */
 
 	/* Delay accounting fields start
 	 *
@@ -56,7 +68,7 @@ struct taskstats {
 	/* Delay waiting for cpu, while runnable
 	 * count, delay_total NOT updated atomically
 	 */
-	__u64	cpu_count;
+	__u64	cpu_count __attribute__((aligned(8)));
 	__u64	cpu_delay_total;
 
 	/* Following four fields atomically updated using task->delays->lock */
@@ -88,6 +100,69 @@ struct taskstats {
 	__u64	cpu_run_virtual_total;
 	/* Delay accounting fields end */
 	/* version 1 ends here */
+
+	/* Basic Accounting Fields start */
+	char	ac_comm[TS_COMM_LEN];	/* Command name */
+	__u8	ac_sched __attribute__((aligned(8)));
+					/* Scheduling discipline */
+	__u8	ac_pad[3];
+	__u32	ac_uid __attribute__((aligned(8)));
+					/* User ID */
+	__u32	ac_gid;			/* Group ID */
+	__u32	ac_pid;			/* Process ID */
+	__u32	ac_ppid;		/* Parent process ID */
+	__u32	ac_btime;		/* Begin time [sec since 1970] */
+	__u64	ac_etime __attribute__((aligned(8)));
+					/* Elapsed time [usec] */
+	__u64	ac_utime;		/* User CPU time [usec] */
+	__u64	ac_stime;		/* SYstem CPU time [usec] */
+	__u64	ac_minflt;		/* Minor Page Fault Count */
+	__u64	ac_majflt;		/* Major Page Fault Count */
+	/* Basic Accounting Fields end */
+
+	/* Extended accounting fields start */
+	/* Accumulated RSS usage in duration of a task, in MBytes-usecs.
+	 * The current rss usage is added to this counter every time
+	 * a tick is charged to a task's system time. So, at the end we
+	 * will have memory usage multiplied by system time. Thus an
+	 * average usage per system time unit can be calculated.
+	 */
+	__u64	coremem;		/* accumulated RSS usage in MB-usec */
+	/* Accumulated virtual memory usage in duration of a task.
+	 * Same as acct_rss_mem1 above except that we keep track of VM usage.
+	 */
+	__u64	virtmem;		/* accumulated VM  usage in MB-usec */
+
+	/* High watermark of RSS and virtual memory usage in duration of
+	 * a task, in KBytes.
+	 */
+	__u64	hiwater_rss;		/* High-watermark of RSS usage, in KB */
+	__u64	hiwater_vm;		/* High-water VM usage, in KB */
+
+	/* The following four fields are I/O statistics of a task. */
+	__u64	read_char;		/* bytes read */
+	__u64	write_char;		/* bytes written */
+	__u64	read_syscalls;		/* read syscalls */
+	__u64	write_syscalls;		/* write syscalls */
+	/* Extended accounting fields end */
+
+#define TASKSTATS_HAS_IO_ACCOUNTING
+	/* Per-task storage I/O accounting starts */
+	__u64	read_bytes;		/* bytes of read I/O */
+	__u64	write_bytes;		/* bytes of write I/O */
+	__u64	cancelled_write_bytes;	/* bytes of cancelled write I/O */
+
+	__u64  nvcsw;			/* voluntary_ctxt_switches */
+	__u64  nivcsw;			/* nonvoluntary_ctxt_switches */
+
+	/* time accounting for SMT machines */
+	__u64	ac_utimescaled;		/* utime scaled on frequency etc */
+	__u64	ac_stimescaled;		/* stime scaled on frequency etc */
+	__u64	cpu_scaled_run_real_total; /* scaled cpu_run_real_total */
+
+	/* Delay waiting for memory reclaim */
+	__u64	freepages_count;
+	__u64	freepages_delay_total;
 };
 
 
@@ -113,6 +188,7 @@ enum {
 	TASKSTATS_TYPE_STATS,		/* taskstats structure */
 	TASKSTATS_TYPE_AGGR_PID,	/* contains pid + stats */
 	TASKSTATS_TYPE_AGGR_TGID,	/* contains tgid + stats */
+	TASKSTATS_TYPE_NULL,		/* contains nothing */
 	__TASKSTATS_TYPE_MAX,
 };
 
