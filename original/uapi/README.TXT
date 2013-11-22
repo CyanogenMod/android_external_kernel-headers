@@ -1,15 +1,20 @@
 This directory contains the uapi version of original kernel headers that are
-used to generate Bionic's "cleaned-up" user-land headers. The
-architectural-independent ones (eg asm-generic, linux, ...) are retrieved
-from the include/uapi directory in the kernel distribution. The
-architectural-dependent ones are retrieved from the
-arch/<arch_name>/include/uapi directory. There are also generated headers
-(eg errno.h, posix_types.h, ...) by doing
-"make ARCH=<arch_name> headers_install" in the kernel directory. The generated
-headers can be found at "arch/<arch_name>/include/generated/asm" and they
-should be copied over to the architectural-dependent directory.
+used to generate Bionic's "cleaned-up" user-land headers. The script
+bionic/libc/kernel/tools/generate_uapi_headers.sh automatically imports the
+headers from an android kernel repository.
 
-They are mostly covered by the GPLv2 + exception, and thus cannot be distributed as part of the platform itself.
-(NOTE: The cleaned up headers do not contain copyrightable information and are distributed with Bionic)
+Running the script:
+
+generate_uapi_headers.sh --download-kernel
+
+In order to run the script, you must have properly initialized the build
+environment using the lunch command. The script will automatically retrieve
+an android kernel, generate all include files, and then copy the headers to
+this directory.
+
+The headers are mostly covered by the GPLv2 + exception, and thus cannot be
+distributed as part of the platform itself.
+(NOTE: The cleaned up headers do not contain copyrightable information and
+are distributed with Bionic)
 
 For more details, please read bionic/libc/kernel/README.TXT
