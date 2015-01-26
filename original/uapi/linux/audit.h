@@ -342,6 +342,7 @@ enum {
 #define __AUDIT_ARCH_64BIT 0x80000000
 #define __AUDIT_ARCH_LE	   0x40000000
 
+#define AUDIT_ARCH_AARCH64	(EM_AARCH64|__AUDIT_ARCH_64BIT|__AUDIT_ARCH_LE)
 #define AUDIT_ARCH_ALPHA	(EM_ALPHA|__AUDIT_ARCH_64BIT|__AUDIT_ARCH_LE)
 #define AUDIT_ARCH_ARM		(EM_ARM|__AUDIT_ARCH_LE)
 #define AUDIT_ARCH_ARMEB	(EM_ARM)
@@ -351,6 +352,7 @@ enum {
 #define AUDIT_ARCH_IA64		(EM_IA_64|__AUDIT_ARCH_64BIT|__AUDIT_ARCH_LE)
 #define AUDIT_ARCH_M32R		(EM_M32R)
 #define AUDIT_ARCH_M68K		(EM_68K)
+#define AUDIT_ARCH_MICROBLAZE	(EM_MICROBLAZE)
 #define AUDIT_ARCH_MIPS		(EM_MIPS)
 #define AUDIT_ARCH_MIPSEL	(EM_MIPS|__AUDIT_ARCH_LE)
 #define AUDIT_ARCH_MIPS64	(EM_MIPS|__AUDIT_ARCH_64BIT)
@@ -363,7 +365,9 @@ enum {
 #define AUDIT_ARCH_PARISC	(EM_PARISC)
 #define AUDIT_ARCH_PARISC64	(EM_PARISC|__AUDIT_ARCH_64BIT)
 #define AUDIT_ARCH_PPC		(EM_PPC)
+/* do not define AUDIT_ARCH_PPCLE since it is not supported by audit */
 #define AUDIT_ARCH_PPC64	(EM_PPC64|__AUDIT_ARCH_64BIT)
+#define AUDIT_ARCH_PPC64LE	(EM_PPC64|__AUDIT_ARCH_64BIT|__AUDIT_ARCH_LE)
 #define AUDIT_ARCH_S390		(EM_S390)
 #define AUDIT_ARCH_S390X	(EM_S390|__AUDIT_ARCH_64BIT)
 #define AUDIT_ARCH_SH		(EM_SH)
@@ -442,19 +446,6 @@ struct audit_rule_data {
 	__u32		fieldflags[AUDIT_MAX_FIELDS];
 	__u32		buflen;	/* total length of string fields */
 	char		buf[0];	/* string fields buffer */
-};
-
-/* audit_rule is supported to maintain backward compatibility with
- * userspace.  It supports integer fields only and corresponds to
- * AUDIT_ADD, AUDIT_DEL and AUDIT_LIST requests.
- */
-struct audit_rule {		/* for AUDIT_LIST, AUDIT_ADD, and AUDIT_DEL */
-	__u32		flags;	/* AUDIT_PER_{TASK,CALL}, AUDIT_PREPEND */
-	__u32		action;	/* AUDIT_NEVER, AUDIT_POSSIBLE, AUDIT_ALWAYS */
-	__u32		field_count;
-	__u32		mask[AUDIT_BITMASK_SIZE];
-	__u32		fields[AUDIT_MAX_FIELDS];
-	__u32		values[AUDIT_MAX_FIELDS];
 };
 
 #endif /* _UAPI_LINUX_AUDIT_H_ */
